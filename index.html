@@ -59,5 +59,9 @@
       mediaConnection.answer(localStream);
       setEventListener(mediaConnection);
     });
+
+    peer.on("error", (err) => {
+      alert(err.message);
+    });
   </script>
 </html>
