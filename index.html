@@ -44,7 +44,7 @@
     document.getElementById("make-call").onclick = () => {
       const theirID = document.getElementById("their-id").value;
       const mediaConnection = peer.call(theirID, localStream);
-      setEventListener(mediaConeection);
+      setEventListener(mediaConnection);
     };
 
     const setEventListener = (mediaConnection) => {
@@ -56,7 +56,7 @@
     };
 
     peer.on("call", (mediaConnection) => {
-      mediaConeection.answer(localStream);
+      mediaConnection.answer(localStream);
       setEventListener(mediaConnection);
     });
   </script>
