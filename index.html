@@ -1,66 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>
+    <title>SkyWayのチュートリアル!</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>
-  <title>SkyWayのチュートリアル!</title>
-</head>
+  <body>
+    <video id="my-video" width="400px" autoplay muted playsinline></video>
+    <p id="my-id" style="background-color: red; color: white;"></p>
+    <textarea id="their-id"></textarea>
+    <button id="make-call">発信</button>
+    <video id="their-video" width="400px" autoplay muted playsinline></video>
+  </body>
+  <script>
+    let localStream;
 
-<body>
-  <video id="my-video" width="400px" autoplay muted playsinline></video>
-  <p id="my-id" style="background-color: red; color: white"></p>
-  <textarea id="their-id"></textarea>
-  <button id="make-call">発信</button>
-  <video id="their-video" width="400px" autoplay muted playsinline></video>
-</body>
-<script>
-  let localStream;
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        const videoElm = document.getElementById("my-video");
+        videoElm.srcObject = stream;
+        videoElm.play();
+        localStream = stream;
+      })
+      .catch((error) => {
+        console.error("fuck maji fuck", error);
+        return;
+      });
+    // APIキー bfd51e07-90d7-46b0-a5f2-97741a32a6ac
 
-  navigator.mediaDevices
-    .getUserMedia({ video: true, audio: true })
-    .then((stream) => {
-      const videoElm = document.getElementById("my-video");
-      videoElm.srcObject = stream;
-      videoElm.play();
-      localStream = stream;
-    })
-    .catch((error) => {
-      console.error("fuck maji fuck", error);
-      return;
+    //Peer作成
+    const peer = new Peer({
+      key: "bfd51e07-90d7-46b0-a5f2-97741a32a6ac",
+      debug: 3,
     });
-  // APIキー bfd51e07-90d7-46b0-a5f2-97741a32a6ac
 
-  //Peer作成
-  const peer = new Peer({
-    key: "bfd51e07-90d7-46b0-a5f2-97741a32a6ac",
-    debug: 3,
-  });
-
-  peer.on('open', () => {
-    document.getElementById("my-id").textContent = peer.id;
-  });
-
-
-  document.getElementById("make-call").onclick = () => {
-    const theirID = document.getElementById("their-id").value;
-    const mediaConnection = peer.call(theirID, localStream);
-    setEventListener(mediaConeection);
-  };
-
-  const setEventListener = mediaConnection => {
-    mediaConnection.on('stream', stream => {
-      const videoElm = document.getElementById("their-video")
-      videoElm.srcObject = stream;
-      videoElm.play();
+    peer.on("open", () => {
+      document.getElementById("my-id").textContent = peer.id;
     });
-  }
 
-  peer.on('call', mediaConnection => {
-    mediaConeection.answer(localStream);
-    setEventListener(mediaConeection);
-  });
-</script>
+    document.getElementById("make-call").onclick = () => {
+      const theirID = document.getElementById("their-id").value;
+      const mediaConnection = peer.call(theirID, localStream);
+      setEventListener(mediaConeection);
+    };
 
+    const setEventListener = (mediaConnection) => {
+      mediaConnection.on("stream", (stream) => {
+        const videoElm = document.getElementById("their-video");
+        videoElm.srcObject = stream;
+        videoElm.play();
+      });
+    };
+
+    peer.on("call", (mediaConnection) => {
+      mediaConeection.answer(localStream);
+      setEventListener(mediaConnection);
+    });
+  </script>
 </html>
